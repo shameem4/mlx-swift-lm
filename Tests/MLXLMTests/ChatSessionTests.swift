@@ -5,6 +5,7 @@ import MLX
 import MLXLLM
 import MLXNN
 import MLXOptimizers
+import MLXScriptedLM
 import XCTest
 
 @testable import MLXLMCommon
@@ -541,7 +542,7 @@ public class ChatSessionTests: XCTestCase {
     func testChangingInstructionsUpdatesRetainedConversation() async throws {
         let (recordedMessages, continuation) = AsyncStream<[RecordedMessage]>.makeStream()
         let processor = TestInputProcessor(
-            tokenizer: TestTokenizer(),
+            tokenizer: PseudoWordTokenizer(),
             configuration: ModelConfiguration(id: "test"),
             messageGenerator: RecordingMessageGenerator(continuation: continuation))
         let session = ChatSession(
@@ -570,7 +571,7 @@ public class ChatSessionTests: XCTestCase {
     func testEmptyGenerationRollsBackIncompleteTurn() async throws {
         let (recordedMessages, continuation) = AsyncStream<[RecordedMessage]>.makeStream()
         let processor = TestInputProcessor(
-            tokenizer: TestTokenizer(),
+            tokenizer: PseudoWordTokenizer(),
             configuration: ModelConfiguration(id: "test"),
             messageGenerator: RecordingMessageGenerator(continuation: continuation))
         let session = ChatSession(
@@ -597,7 +598,7 @@ public class ChatSessionTests: XCTestCase {
     func testInterruptedGenerationRollsBackIncompleteTurn() async throws {
         let (recordedMessages, continuation) = AsyncStream<[RecordedMessage]>.makeStream()
         let processor = TestInputProcessor(
-            tokenizer: TestTokenizer(),
+            tokenizer: PseudoWordTokenizer(),
             configuration: ModelConfiguration(id: "test"),
             messageGenerator: RecordingMessageGenerator(continuation: continuation))
         let session = ChatSession(
@@ -645,7 +646,7 @@ public class ChatSessionTests: XCTestCase {
     func testStructuredContinuationRendersCompleteTranscriptAcrossToolTurns() async throws {
         let (recordedMessages, continuation) = AsyncStream<[RecordedMessage]>.makeStream()
         let processor = TestInputProcessor(
-            tokenizer: TestTokenizer(),
+            tokenizer: PseudoWordTokenizer(),
             configuration: ModelConfiguration(id: "test"),
             messageGenerator: RecordingMessageGenerator(continuation: continuation))
         let history: [Chat.Message] = (0 ..< 8).flatMap { index in
