@@ -685,6 +685,16 @@ public struct TokenIterator: TokenIteratorProtocol {
             asyncEval(y.tokens)
 
         case .logits(let result):
+            // The .tokens branch above picks up the model's state through
+            // step(); this one dropped it, so every model whose prepare()
+            // returns .logits — which is every VLM — began generating with
+            // state == nil. For the Qwen VL families and GLM-OCR that state
+            // carries the M-RoPE deltas, so positions were recomputed from a
+            // single token on the first generated step and the sequence
+            // restarted mid-generation.
+            //
+            // Upstream: ml-explore/mlx-swift-lm#681
+            self.state = result.state
             y = .init(tokens: convertToToken(logits: result.logits))
             asyncEval(y.tokens)
 
